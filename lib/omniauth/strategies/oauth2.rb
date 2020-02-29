@@ -64,6 +64,7 @@ module OmniAuth
       end
 
       def callback_phase # rubocop:disable AbcSize, CyclomaticComplexity, MethodLength, PerceivedComplexity
+        log :info, %Q{auath0: #{self.class.name}.callback_phase - OM_OAUTH2 enter}
         error = request.params["error_reason"] || request.params["error"]
         if error
           fail!(error, CallbackError.new(request.params["error"], request.params["error_description"] || request.params["error_reason"], request.params["error_uri"]))
@@ -86,7 +87,10 @@ module OmniAuth
 
       def build_access_token
         verifier = request.params["code"]
-        client.auth_code.get_token(verifier, {:redirect_uri => callback_url}.merge(token_params.to_hash(:symbolize_keys => true)), deep_symbolize(options.auth_token_params))
+        log :info, %Q{auth0: #{self.class.name}.build_access_token:  OM_OAUTH2 start}
+        token = client.auth_code.get_token(verifier, {:redirect_uri => callback_url}.merge(token_params.to_hash(:symbolize_keys => true)), deep_symbolize(options.auth_token_params))
+        log :info, %Q{auth0: #{self.class.name}.build_access_token:  OM_OAUTH2 finish}
+        return token
       end
 
       def deep_symbolize(options)
