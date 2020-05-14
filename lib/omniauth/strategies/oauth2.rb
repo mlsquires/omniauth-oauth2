@@ -56,6 +56,7 @@ module OmniAuth
           @env["rack.session"] ||= {}
         end
         session["omniauth.state"] = params[:state]
+        Rails.logger.info %Q{auth0: #{self.class.name}.authorize_params: params: #{params.inspect}}
         params
       end
 
@@ -64,7 +65,7 @@ module OmniAuth
       end
 
       def callback_phase # rubocop:disable AbcSize, CyclomaticComplexity, MethodLength, PerceivedComplexity
-        log :info, %Q{auath0: #{self.class.name}.callback_phase - OM_OAUTH2 enter}
+        log :info, %Q{auth0: #{self.class.name}.callback_phase - OM_OAUTH2 enter: params: #{request.params.inspect}}
         error = request.params["error_reason"] || request.params["error"]
         if error
           fail!(error, CallbackError.new(request.params["error"], request.params["error_description"] || request.params["error_reason"], request.params["error_uri"]))
